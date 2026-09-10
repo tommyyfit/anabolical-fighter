@@ -14,19 +14,80 @@
     <div id="stage">
       <canvas id="game" width="1280" height="720" aria-label="Anabolical Fighter game canvas"></canvas>
       <div id="vignette"></div>
+
       <div id="hud" class="hud hidden" aria-live="polite">
-        <div class="hud-left"><div class="hud-card vitals-card"><div class="hud-title"><span class="dot cyan"></span>VITALS <b id="hpText">100 / 100</b></div><div class="bar hp"><i id="hpBar"></i></div><div class="xp-row"><span>XP <b id="levelText">LV 1</b></span><span id="xpText">0 / 45</span></div><div class="bar xp"><i id="xpBar"></i></div></div><div id="buildStrip" class="build-strip"></div></div>
-        <div class="hud-center"><div class="timer-card"><strong id="timerText">05:00</strong><span id="phaseText">WARM-UP</span><div class="run-progress"><i id="runProgress"></i></div></div></div>
-        <div class="hud-right"><div class="stat-card"><span>☠</span><div><small>KILLS</small><b id="killsText">0</b></div></div><div class="dash-card" id="dashCard"><span class="dash-icon">➤➤</span><div><small>DASH</small><b id="dashText">READY</b><div class="dash-bar"><i id="dashBar"></i></div></div></div><div class="streak-card"><small>REP STREAK</small><b id="streakText">0</b><span id="pumpText">BUILD THE PUMP</span></div></div>
-        <div id="bossBar" class="boss-bar hidden"><span id="bossName">PR CHAMPION</span><div><i id="bossHp"></i></div></div><div id="notice" class="notice"></div><div class="controls-hint"><kbd>WASD</kbd> MOVE <kbd>SPACE</kbd> DASH <kbd>ESC</kbd> PAUSE · ATTACKS FIRE AUTOMATICALLY</div>
+        <div class="hud-left">
+          <div class="hud-card vitals-card">
+            <div class="hud-title"><span class="dot cyan"></span>VITALS <b id="hpText">100 / 100</b></div>
+            <div class="bar hp"><i id="hpBar"></i></div>
+            <div class="xp-row"><span>XP <b id="levelText">LV 1</b></span><span id="xpText">0 / 45</span></div>
+            <div class="bar xp"><i id="xpBar"></i></div>
+          </div>
+          <div id="buildStrip" class="build-strip"></div>
+        </div>
+
+        <div class="hud-center">
+          <div class="timer-card">
+            <strong id="timerText">05:00</strong>
+            <span id="phaseText">WARM-UP</span>
+            <div class="run-progress"><i id="runProgress"></i></div>
+          </div>
+        </div>
+
+        <div class="hud-right">
+          <div class="stat-card"><span>☠</span><div><small>KILLS</small><b id="killsText">0</b></div></div>
+          <div class="dash-card" id="dashCard"><span class="dash-icon">➤➤</span><div><small>DASH</small><b id="dashText">READY</b><div class="dash-bar"><i id="dashBar"></i></div></div></div>
+          <div class="streak-card"><small>REP STREAK</small><b id="streakText">0</b><span id="pumpText">BUILD THE PUMP</span></div>
+        </div>
+
+        <div id="bossBar" class="boss-bar hidden"><span id="bossName">PR CHAMPION</span><div><i id="bossHp"></i></div></div>
+        <div id="notice" class="notice"></div>
+        <div class="controls-hint"><kbd>WASD</kbd> MOVE <kbd>SPACE</kbd> DASH <kbd>ESC</kbd> PAUSE · ATTACKS FIRE AUTOMATICALLY</div>
       </div>
+
       <div id="rotateHint" class="rotate-hint">↻ ROTATE TO LANDSCAPE FOR THE BEST EXPERIENCE</div>
-      <div id="touchControls" class="touch-controls hidden"><div id="stickZone" class="stick-zone"><div id="stickKnob" class="stick-knob"></div></div><button id="dashTouch" class="touch-dash">DASH</button></div>
+      <div id="touchControls" class="touch-controls hidden">
+        <div id="stickZone" class="stick-zone"><div id="stickKnob" class="stick-knob"></div></div>
+        <button id="dashTouch" class="touch-dash">DASH</button>
+      </div>
     </div>
-    <div id="loading" class="screen active"><div class="loading-card glass"><img src="" data-af-asset="Branding/logo.webp" class="logo" alt="Anabolical Fighter" /><div class="eyebrow">WEB EDITION</div><div class="loader"><span></span></div><div id="loadingText" class="muted">Preparing the Iron Circuit…</div></div></div>
-    <div id="mainMenu" class="screen"><div class="menu-bg"></div><div class="menu-layout"><section class="hero-copy"><img src="" data-af-asset="Branding/logo.webp" class="main-logo" alt="Anabolical Fighter — The Iron Circuit" /><p class="tagline">OUTRUN THE HORDE. BUILD YOUR LOADOUT. OWN THE GYM.</p><p class="subtag">Five minutes. Four weapons. One last rep.</p><div id="recordLine" class="record-line">PERSONAL BEST — 00:00 · 0 KILLS</div></section><nav class="menu-actions glass"><button id="playBtn" class="ui-btn primary big">ENTER THE ARENA <span>→</span></button><button id="upgradesBtn" class="ui-btn">PERMANENT UPGRADES</button><button id="settingsBtn" class="ui-btn">SETTINGS</button><button id="guideBtn" class="ui-btn subtle">HOW TO PLAY</button></nav></div><footer class="site-footer">ANABOLICAL FIGHTER · WEB EDITION <span>•</span> LIFT / SURVIVE / GET STRONGER / REPEAT</footer></div>
-    <div id="modal" class="screen modal-screen"><div id="modalCard" class="modal-card glass"></div></div>
+
+    <div id="loading" class="screen active">
+      <div class="loading-card glass">
+        <img src="" data-af-asset="Branding/logo.webp" class="logo" alt="Anabolical Fighter" />
+        <div class="eyebrow">WEB EDITION</div>
+        <div class="loader"><span></span></div>
+        <div id="loadingText" class="muted">Preparing the Iron Circuit…</div>
+      </div>
+    </div>
+
+    <div id="mainMenu" class="screen">
+      <div class="menu-bg"></div>
+      <div class="menu-layout">
+        <section class="hero-copy">
+          <img src="" data-af-asset="Branding/logo.webp" class="main-logo" alt="Anabolical Fighter — The Iron Circuit" />
+          <p class="tagline">OUTRUN THE HORDE. BUILD YOUR LOADOUT. OWN THE GYM.</p>
+          <p class="subtag">Five minutes. Four weapons. One last rep.</p>
+          <div id="recordLine" class="record-line">PERSONAL BEST — 00:00 · 0 KILLS</div>
+        </section>
+        <nav class="menu-actions glass">
+          <button id="playBtn" class="ui-btn primary big">ENTER THE ARENA <span>→</span></button>
+          <button id="upgradesBtn" class="ui-btn">PERMANENT UPGRADES</button>
+          <button id="settingsBtn" class="ui-btn">SETTINGS</button>
+          <button id="guideBtn" class="ui-btn subtle">HOW TO PLAY</button>
+        </nav>
+      </div>
+      <footer class="site-footer">ANABOLICAL FIGHTER · WEB EDITION <span>•</span> LIFT / SURVIVE / GET STRONGER / REPEAT</footer>
+    </div>
+
+    <div id="modal" class="screen modal-screen">
+      <div id="modalCard" class="modal-card glass"></div>
+    </div>
   </div>
-  <script src="assets-1.js"></script><script src="assets-2.js"></script><script src="assets-3.js"></script><script src="assets-4.js"></script><script src="assets-5.js"></script><script src="assets-6.js"></script><script src="assets-7.js"></script><script src="assets-8.js"></script><script src="assets-9.js"></script><script src="assets-10.js"></script><script src="assets-11.js"></script><script src="assets-12.js"></script><script src="assets-13.js"></script><script src="assets-14.js"></script><script src="assets-15.js"></script><script src="assets-16.js"></script><script src="assets-17.js"></script><script src="assets-18.js"></script><script src="assets-19.js"></script><script src="assets-20.js"></script><script src="game.js"></script>
+  <script src="runtime-assets.js"></script>
+  <script src="game-data-1.js"></script>
+  <script src="game-data-2.js"></script>
+  <script src="game-data-3.js"></script>
+  <script src="game-loader.js"></script>
 </body>
 </html>
