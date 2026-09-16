@@ -1,11 +1,5 @@
-# Anabolical Fighter — Web Edition
+# Anabolical Fighter — The Iron Circuit
 
-Standalone browser edition of **Anabolical Fighter: The Iron Circuit**.
+Browser port matched to the desktop build, with the original desktop artwork packed into a browser-loaded atlas.
 
-## Controls
-- WASD / Arrow keys — move
-- Space — dash
-- Esc — pause
-- Weapons fire automatically
-
-Progress and settings are saved locally in the browser.
+Controls: WASD/Arrows move, Space dash, Esc pause. Weapons fire automatically.
