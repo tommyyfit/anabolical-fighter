@@ -1,0 +1,6 @@
+/* V7 sharp-render pass: never upscale the 1280x720 gameplay canvas above native size. */
+#stage{width:min(100vw,1280px,177.7778vh)!important;height:min(100vh,720px,56.25vw)!important}
+#game{width:100%;height:100%;image-rendering:-webkit-optimize-contrast;image-rendering:crisp-edges;backface-visibility:hidden;transform:translateZ(0)}
+.menu-bg,.desktop-panel,.hud-panel,.loadout-panel,.boss-bar,.notice,.controls-hint{image-rendering:auto}
+.logo,.main-logo,.hud-icon,.upgrade-card img,.build-slot img{image-rendering:auto}
+@media(max-width:1280px),(max-height:720px){#game{image-rendering:auto}}
