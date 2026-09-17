@@ -1,0 +1,1 @@
+Full-resolution V7 atlas chunks p000-p052.
