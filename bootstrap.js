@@ -10,11 +10,28 @@
   };
   const b64ToBytes=b64=>{const clean=b64.replace(/\s+/g,'');if(!clean||clean.length%4!==0)throw new Error(`Invalid base64 chunk (${clean.length})`);const bin=atob(clean);const out=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);return out};
 
+  // The web atlas contains the actual sprite sheets at 384px width. The original
+  // browser port expected 256px frame cells because the old loader first enlarged
+  // those sheets to 1024px. Intercept only those sprite-sheet source rectangles and
+  // map them directly to the real 96px cells. This removes an unnecessary
+  // 384 -> 1024 -> screen resampling pass which was the main source of soft sprites.
+  const nativeDrawImage=CanvasRenderingContext2D.prototype.drawImage;
+  CanvasRenderingContext2D.prototype.drawImage=function(img,...a){
+    if(a.length===8 && img && ((img.naturalWidth===384&&img.naturalHeight===384)||(img.naturalWidth===384&&img.naturalHeight===192))){
+      const [sx,sy,sw,sh,dx,dy,dw,dh]=a;
+      if(sw===256&&sh===256){
+        const k=96/256;
+        return nativeDrawImage.call(this,img,sx*k,sy*k,sw*k,sh*k,dx,dy,dw,dh);
+      }
+    }
+    return nativeDrawImage.call(this,img,...a);
+  };
+
   (async()=>{
     try{
-      setStatus('Loading sharp V7 desktop artwork…');
+      setStatus('Loading V7 desktop artwork…');
       const parts=[...Array.from({length:18},(_,i)=>`c${String(i).padStart(2,'0')}`),'c18a','c18b','c19','c20','c21','c22'];
-      const texts=await Promise.all(parts.map(n=>fetch(`v7art/${n}.b64?v=7`,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(`${n}: HTTP ${r.status}`);return r.text()})));
+      const texts=await Promise.all(parts.map(n=>fetch(`v7art/${n}.b64?v=8`,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(`${n}: HTTP ${r.status}`);return r.text()})));
       const chunks=texts.map((t,i)=>{try{return b64ToBytes(t)}catch(e){throw new Error(`${parts[i]}: ${e.message}`)}});
       const total=chunks.reduce((n,c)=>n+c.length,0);
       if(total<50000)throw new Error(`V7 atlas payload too small (${total} bytes)`);
@@ -26,29 +43,28 @@
         const A=window.AF_ASSETS={};
         const U=window.AF_ASSET_URLS={};
         const M=window.AF_ART_META||{};
-        const nativeSheets={'Player/hero.webp':[1024,1024],'Enemies/basic.webp':[1024,512],'Enemies/fast.webp':[1024,512],'Enemies/tank.webp':[1024,512]};
         for(const [key,m] of Object.entries(M)){
-          // Lossless UI/menu extraction: keep the atlas pixels exactly as decoded.
           const raw=document.createElement('canvas');raw.width=m.w;raw.height=m.h;
-          const rc=raw.getContext('2d',{alpha:true});rc.imageSmoothingEnabled=false;
+          const rc=raw.getContext('2d',{alpha:true,willReadFrequently:false});
+          rc.imageSmoothingEnabled=false;
           rc.drawImage(atlas,m.x,m.y,m.w,m.h,0,0,m.w,m.h);
-          U[key]=raw.toDataURL('image/png');
-
-          // Gameplay compatibility: sprite sheets need the native desktop sheet dimensions.
-          // Upscale with nearest-neighbour so edges stay sharp instead of being blurred.
-          const [ow,oh]=nativeSheets[key]||[m.w,m.h];
-          const c=document.createElement('canvas');c.width=ow;c.height=oh;
-          const x=c.getContext('2d',{alpha:true});x.imageSmoothingEnabled=false;
-          x.drawImage(raw,0,0,m.w,m.h,0,0,ow,oh);
-          A[key]=c.toDataURL('image/webp',1.0).split(',')[1];
+          const png=raw.toDataURL('image/png');
+          U[key]=png;
+          // Do not enlarge the hero/enemy sheets anymore. Keep their real atlas
+          // resolution and let the drawImage mapping above select the correct cells.
+          A[key]=raw.toDataURL('image/webp',1).split(',')[1];
         }
         if(Object.keys(A).length<45)throw new Error(`Only ${Object.keys(A).length} V7 assets extracted`);
-        console.info(`V7 sharp atlas decoded: ${atlas.naturalWidth}x${atlas.naturalHeight}, ${total} bytes, ${Object.keys(A).length} assets`);
+        console.info(`V7 direct-resolution atlas: ${atlas.naturalWidth}x${atlas.naturalHeight}, ${Object.keys(A).length} assets`);
       }finally{URL.revokeObjectURL(atlasUrl)}
       bind();
       setStatus('Starting Iron Circuit…');
-      for(const src of ['game-data-1.js?v=7','game-data-2.js?v=7','game-data-3.js?v=7','game-loader.js?v=7'])await load(src);
-      console.info('Anabolical Fighter: sharp V7 desktop artwork loaded.');
+      for(const src of ['game-data-1.js?v=8','game-data-2.js?v=8','game-data-3.js?v=8','game-loader.js?v=8'])await load(src);
+      requestAnimationFrame(()=>{
+        const c=document.getElementById('game');
+        if(c){c.style.imageRendering='auto';c.style.transform='none';}
+      });
+      console.info('Anabolical Fighter: V7 sharp render pipeline active.');
     }catch(e){
       console.error('Anabolical Fighter V7 boot failed',e);
       setStatus(`V7 LOAD ERROR: ${e.message}`);
