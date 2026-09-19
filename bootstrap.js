@@ -1,5 +1,5 @@
 (()=>{
-  const VERSION='10';
+  const VERSION='11';
   const load=src=>new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=()=>reject(new Error(`Failed to load ${src}`));document.body.appendChild(s)});
   const setStatus=t=>{const el=document.getElementById('loadingText');if(el)el.textContent=t};
   const bind=()=>{
@@ -10,25 +10,7 @@
     [['--panel','UI/panel.webp'],['--menu-art','Branding/menu.webp'],['--btn','UI/button.webp'],['--btn2','UI/button_secondary.webp'],['--btnh','UI/button_hover.webp'],['--footer','UI/footer.webp']].forEach(([v,k])=>{const u=data(k);if(u)st.setProperty(v,`url("${u}")`)});
   };
   const b64ToBytes=b64=>{const clean=b64.replace(/\s+/g,'');if(!clean||clean.length%4!==0)throw new Error(`Invalid base64 chunk (${clean.length})`);const bin=atob(clean);const out=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);return out};
-  const sharpen=(canvas,amount=.12)=>{
-    const ctx=canvas.getContext('2d',{alpha:true,willReadFrequently:true});
-    const w=canvas.width,h=canvas.height;
-    if(w<3||h<3||w*h>2200000)return;
-    const im=ctx.getImageData(0,0,w,h),src=im.data,dst=new Uint8ClampedArray(src);
-    const row=w*4;
-    for(let y=1;y<h-1;y++){
-      for(let x=1;x<w-1;x++){
-        const i=(y*w+x)*4;
-        if(src[i+3]===0)continue;
-        for(let c=0;c<3;c++){
-          const center=src[i+c];
-          const blur=(src[i-4+c]+src[i+4+c]+src[i-row+c]+src[i+row+c])*.25;
-          dst[i+c]=Math.max(0,Math.min(255,center+(center-blur)*amount));
-        }
-      }
-    }
-    im.data.set(dst);ctx.putImageData(im,0,0);
-  };
+  const UI_URL_KEYS=new Set(['Branding/menu.webp','Branding/logo.webp','UI/panel.webp','UI/button.webp','UI/button_secondary.webp','UI/button_hover.webp','UI/footer.webp','UI/health_icon.webp','UI/skull_icon.webp','UI/xp_icon.webp']);
   (async()=>{
     try{
       setStatus('Loading V7 desktop artwork in high quality…');
@@ -48,22 +30,21 @@
         for(const [key,m] of Object.entries(M)){
           const [ow,oh]=N[key]||[m.w,m.h];
           const c=document.createElement('canvas');c.width=ow;c.height=oh;
-          const x=c.getContext('2d',{alpha:true,willReadFrequently:false});
+          const x=c.getContext('2d',{alpha:true});
           x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
           x.drawImage(atlas,m.x,m.y,m.w,m.h,0,0,ow,oh);
-          if(ow>m.w*1.15||oh>m.h*1.15)sharpen(c,.12);
-          const png=c.toDataURL('image/png');
-          U[key]=png;
-          A[key]=c.toDataURL('image/webp',1).split(',')[1];
+          const webp=c.toDataURL('image/webp',1);
+          A[key]=webp.split(',')[1];
+          if(UI_URL_KEYS.has(key)) U[key]=c.toDataURL('image/png');
         }
         if(Object.keys(A).length<45)throw new Error(`Only ${Object.keys(A).length} V7 assets extracted`);
-        console.info(`V7 HQ render pipeline: atlas ${atlas.naturalWidth}x${atlas.naturalHeight}; ${Object.keys(A).length} assets restored to desktop dimensions.`);
+        console.info(`V7 HQ fast pipeline: atlas ${atlas.naturalWidth}x${atlas.naturalHeight}; ${Object.keys(A).length} assets restored to desktop dimensions.`);
       }finally{URL.revokeObjectURL(atlasUrl)}
       bind();
       setStatus('Starting Iron Circuit…');
       for(const src of [`game-data-1.js?v=${VERSION}`,`game-data-2.js?v=${VERSION}`,`game-data-3.js?v=${VERSION}`,`game-loader.js?v=${VERSION}`])await load(src);
       requestAnimationFrame(()=>{const c=document.getElementById('game');if(c){c.style.imageRendering='auto';c.style.transform='none';}});
-      console.info('Anabolical Fighter: V7 HQ render pipeline active.');
+      console.info('Anabolical Fighter: V7 HQ fast render pipeline active.');
     }catch(e){
       console.error('Anabolical Fighter V7 boot failed',e);
       setStatus(`V7 LOAD ERROR: ${e.message}`);
