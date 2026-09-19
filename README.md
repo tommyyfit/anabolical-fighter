@@ -1,5 +1,3 @@
 # Anabolical Fighter — The Iron Circuit
 
-Browser port matched to the desktop build, with the original desktop artwork packed into a browser-loaded atlas.
-
-Controls: WASD/Arrows move, Space dash, Esc pause. Weapons fire automatically.
+Browser edition of the V7 desktop game. Current live build uses the V10 high-quality V7 rendering pipeline with original desktop asset dimensions restored at runtime.
